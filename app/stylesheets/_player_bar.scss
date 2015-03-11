@@ -1,0 +1,274 @@
+.album-header-container {
+    margin-top: 55px;
+    margin-bottom: 40px;
+  }
+ 
+  // This styles the right side of our Album Header
+  .album-header-information {
+    // Pushes the album information down and makes sure there's sufficient space at the bottom of the page
+    margin-top: 45px;
+    margin-bottom: 20px;
+  }
+ 
+  .album-header-information h3, .album-header-information h4, .album-header-information h5 {
+    // Modifying the line height allows us to increase the spacing above and
+    // below the content. Another way of achieving the same effect would be to
+    // set a margin-top and margin-bottom for each of these classes
+    line-height: 150%;
+  }
+ 
+  .album-header-information h3 {
+    font-size: 48px;
+    font-weight: 300;
+  }
+ 
+  .album-header-information h4 {
+    font-size: 24px;
+    font-weight: 700;
+  }
+ 
+  .album-header-information h5 {
+    font-size: 16px;
+    font-weight: 500;
+  }
+ 
+  // This styles our Song Listing
+  .table.album-song-listing {
+    // Override the font for the entire table.
+    font-weight: 300;
+  }
+ 
+  // Override the defaults that Bootstrap sets.
+  .table.album-song-listing  td {
+    padding: 20px;
+    border-top: 1px solid rgba(255, 255, 255, .4);
+  }
+ 
+  .album-song-button {
+    text-align: center;
+    font-size: 14px;
+    background-color: white;
+    color: #d2287b;
+    border-radius: 50% 50%;
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+  }
+ 
+  .album-song-button:hover {
+    cursor: pointer;
+    color: white;
+    background-color: #d2287b;
+  }
+ 
+  .album-song-button i {
+    line-height: 28px;
+  }
+ 
+  .album-song-button .fa-play {
+    padding-left: 5px;
+  }
+ 
+  .album-song-listing td {
+    vertical-align: center;
+  }
+ 
+  td.song-number {
+    padding: 0;
+    height: 70px;
+    text-align: center;
+  }
+Refactoring _player_bar.scss Styles
+
+Before we move our player bar styles, we'll take advantage of some of Sass's features. When we want certain styles to inherit from container classes in basic CSS, we list them hierarchically. For example, if we want the element with the .caption class to have a specific style when it's nested under an element with the .collection-album-container class, we would write the style like this:
+
+.collection-album-container .caption {
+   margin-top: 10px;
+}
+This causes a lot of repetition. As a further demonstration, if we wanted to add another nested style for an element within the element that has the .caption class, we would need to rewrite the classes again before the element we're selecting.
+
+.collection-album-container .caption {
+   margin-top: 10px;
+}
+.collection-album-container .caption p {
+   font-size: 16px;
+   font-weight: 300;
+   color: rgba(255, 255, 255, 0.6);
+}
+Sass Nesting
+
+Sass eliminates this repetition by allowing nested styles that are under a given element's class or tag selector. The above snippet could be rewritten as:
+
+.album-collection-container {
+    .caption {
+        margin-top: 10px;
+        p {
+            font-size: 16px;
+        font-weight: 300;
+        color: rgba(255, 255, 255, 0.6);
+        }
+    }
+}
+As you can see, this is more succinct. This is one of the many features of Sass that helps us be more efficient with styling.
+
+Nesting Styles in _player_bar.scss
+
+Let's nest our player bar styles as we move them from app.scss to _player_bar.scss:
+
+app/stylesheets/_player_bar.scss
+  .player-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 150px;
+    background: rgba(255, 255, 255, 0.3);
+    z-index: 100;
+ 
+    a, a:hover {
+      color: white;
+      cursor: pointer;
+      text-decoration: none;
+    }
+ 
+    .container {
+      display: table;
+      padding: 0;
+      min-height: 100%;
+    }
+ 
+    .left-controls {
+      width: 25%;
+      text-align: left;
+    }
+ 
+    .right-controls {
+      width: 25%;
+      text-align: right;
+    }
+ 
+    .play-controls {
+      a {
+        font-size: 20px;
+        vertical-align: middle;
+      }
+ 
+      .previous {
+        margin-right: 65px;
+      }
+ 
+      .play-pause {
+        margin-right: 60px;
+        font-size: 30px
+      }
+    }
+ 
+    .currently-playing {
+      width: 50%;
+      text-align: center;
+      position: relative;
+ 
+      .song-name, .artist-name {
+        text-align: center;
+        margin: 0;
+        position: absolute;
+        width: 100%;
+        font-size: 16px;
+        font-weight: 300;
+      }
+      .song-name {
+        top: 20px;
+      }
+      .artist-name {
+        bottom: 20px;
+      }
+    }
+ 
+    .queue-toggle {
+      display: inline-block;
+      margin-left: 75px;
+ 
+      i {
+        font-size: 20px;
+      }
+    }
+ 
+    .volume {
+      display: inline-block;
+ 
+      i {
+        width: 40px;
+        font-size: 20px;
+        display: inline-block;
+        vertical-align: middle;
+      }
+ 
+      .seek-bar {
+        display: inline-block;
+        width: 100px;
+        vertical-align: middle;
+      }
+    }
+  }
+ 
+  .player-bar-control-group {
+    display: table-cell;
+    vertical-align: middle;
+  }
+ 
+  .seek-control {
+    position: relative;
+ 
+    .current-time {
+      position: absolute;
+      top: 10px;
+    }
+    .total-time {
+      position: absolute;
+      right: 0;
+      top: 10px;
+    }
+  }
+ 
+  .seek-bar {
+    height: 5px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    position: relative;
+    cursor: pointer;
+ 
+    .fill {
+      background: white;
+      width: 36%;
+      height: 5px;
+      border-radius: 2px;
+    }
+ 
+    .thumb {
+      position: absolute;
+      height: 10px;
+      width: 10px;
+      background: white;
+      left: 36%;
+      margin-left: -5px;
+      top: 50%;
+      margin-top: -5px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 100ms ease-in-out;
+    }
+ 
+    &.no-animate {
+      .fill, .thumb {
+        transition: none;
+      }
+    }
+ 
+    &:hover .thumb {
+      width: 20px;
+      height: 20px;
+      margin-top: -10px;
+      margin-left: -10px;
+    }
+ 
+  }
