@@ -78,14 +78,10 @@
     height: 70px;
     text-align: center;
   }
-Refactoring _player_bar.scss Styles
-
-Before we move our player bar styles, we'll take advantage of some of Sass's features. When we want certain styles to inherit from container classes in basic CSS, we list them hierarchically. For example, if we want the element with the .caption class to have a specific style when it's nested under an element with the .collection-album-container class, we would write the style like this:
 
 .collection-album-container .caption {
    margin-top: 10px;
 }
-This causes a lot of repetition. As a further demonstration, if we wanted to add another nested style for an element within the element that has the .caption class, we would need to rewrite the classes again before the element we're selecting.
 
 .collection-album-container .caption {
    margin-top: 10px;
@@ -95,10 +91,6 @@ This causes a lot of repetition. As a further demonstration, if we wanted to add
    font-weight: 300;
    color: rgba(255, 255, 255, 0.6);
 }
-Sass Nesting
-
-Sass eliminates this repetition by allowing nested styles that are under a given element's class or tag selector. The above snippet could be rewritten as:
-
 .album-collection-container {
     .caption {
         margin-top: 10px;
@@ -109,13 +101,6 @@ Sass eliminates this repetition by allowing nested styles that are under a given
         }
     }
 }
-As you can see, this is more succinct. This is one of the many features of Sass that helps us be more efficient with styling.
-
-Nesting Styles in _player_bar.scss
-
-Let's nest our player bar styles as we move them from app.scss to _player_bar.scss:
-
-app/stylesheets/_player_bar.scss
   .player-bar {
     position: fixed;
     bottom: 0;
@@ -151,6 +136,10 @@ app/stylesheets/_player_bar.scss
       a {
         font-size: 20px;
         vertical-align: middle;
+        transition: all 100ms ease-in-out;
+        &:hover {
+          opacity: .5;
+        }
       }
  
       .previous {
