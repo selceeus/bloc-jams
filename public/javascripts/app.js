@@ -593,6 +593,30 @@ blocJams.filter('timecode', function(){
      return output;
    }
  })
+//Create a Metric Service
+blocJams.service('Metric', ['$rootScope', function($rootScope) {
+  $rootScope.songPlays = [];
+
+  return {
+    //Function that records a metric object by pushing it to the $rootScope array
+    registerSongPlay: function(songObj) {
+      //Add time to event register
+      songObj['playedAt'] = new Date();
+      $rootScope.songPlays.push(songObj);
+    },
+    listSongsPlayed: function() {
+      var songs = [];
+      angular.forEach($rootScope.songPlays, function(song) {
+        //Check to make sure the song isn't lister twice
+        if (songs.indexOf(song.name) != -1) {
+          songs.push(song.name);
+        }
+      });
+      return songs;
+    }
+  }
+
+}]);
 
 
 });
