@@ -330,7 +330,7 @@ blocJams.controller('Landing.controller', ['$scope', function($scope) {
 
 }]);
 
-blocJams.controller('Collection.controller', ['$scope','SongPlayer', function($scope, SongPlayer) {
+blocJams.controller('Collection.controller', ['$scope','SongPlayer','Metric', function($scope, SongPlayer, Metric) {
   $scope.albums = [];
     for(var i = 0; i < 33; i++) {
       $scope.albums.push(angular.copy(albumPicasso))
@@ -338,10 +338,11 @@ blocJams.controller('Collection.controller', ['$scope','SongPlayer', function($s
 
    $scope.playAlbum = function(album){
      SongPlayer.setSong(album, album.songs[0]); // Targets first song in the array.
+     Metric.registerSongPlay(album.songs[0]);
    }
 }]);
 
-blocJams.controller('Album.controller', ['$scope', 'SongPlayer', function($scope, SongPlayer) {
+blocJams.controller('Album.controller', ['$scope', 'SongPlayer','Metric', function($scope, SongPlayer,Metric) {
   $scope.album = angular.copy(albumPicasso);
 
   var hoveredSong = null;
@@ -366,6 +367,7 @@ blocJams.controller('Album.controller', ['$scope', 'SongPlayer', function($scope
 
     $scope.playSong = function(song) {
       SongPlayer.setSong($scope.album, song);
+      Metric.registerSongPlay(song);
     };
  
     $scope.pauseSong = function(song) {
@@ -375,6 +377,7 @@ blocJams.controller('Album.controller', ['$scope', 'SongPlayer', function($scope
 }]);
 
 blocJams.controller('PlayerBar.controller', ['$scope', 'SongPlayer', function($scope, SongPlayer) {
+  
   $scope.songPlayer = SongPlayer;
 
    $scope.volumeClass = function() {
@@ -511,7 +514,7 @@ blocJams.service('SongPlayer', ['$rootScope', function($rootScope) {
            scope.max = 100;
            var $seekBar = $(element);
      
-            console.log(attributes);
+            //console.log(attributes);
 
             attributes.$observe('value', function(newValue) {
               scope.value = numberFromValue(newValue, 0);
@@ -595,6 +598,7 @@ blocJams.filter('timecode', function(){
  })
 //Create a Metric Service
 blocJams.service('Metric', ['$rootScope', function($rootScope) {
+  
   $rootScope.songPlays = [];
 
   return {
@@ -603,6 +607,9 @@ blocJams.service('Metric', ['$rootScope', function($rootScope) {
       //Add time to event register
       songObj['playedAt'] = new Date();
       $rootScope.songPlays.push(songObj);
+
+      console.log($rootScope.songPlays);
+
     },
     listSongsPlayed: function() {
       var songs = [];
