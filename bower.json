@@ -2,7 +2,9 @@
   "name": "your-app",
   "version": "0.0.1",
   "main": "public/app.js",
-  "dependencies": {},
+  "dependencies": {
+    "angular-chart.js": "~0.7.0"
+  },
   "overrides": {},
   "devDependencies": {
     "angular": "1.2.15",

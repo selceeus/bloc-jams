@@ -43,6 +43,12 @@ blocJams.config(['$stateProvider', '$locationProvider', function($stateProvider,
     templateUrl: '/templates/album.html' 
   });
 
+  $stateProvider.state('analytics', {
+    url:'/analytics',
+    controller: 'Analytics.controller',
+    templateUrl: '/templates/analytics.html' 
+  });
+
 }]);
 
 blocJams.controller('Landing.controller', ['$scope', function($scope) {
@@ -132,6 +138,14 @@ blocJams.controller('PlayerBar.controller', ['$scope', 'SongPlayer', function($s
 
 }]);
 
+blocJams.controller('Analytics.controller', ['$scope', 'Metric', function($scope, Metric) {
+
+    $scope.title = "Bloc Jams Analytics";
+    $scope.songPlaysListed = Metric.listSongsPlayed;
+}]);
+
+// Services
+
 blocJams.service('SongPlayer', ['$rootScope', function($rootScope) {
   var currentSoundFile = null;
   var trackIndex = function(album, song) {
@@ -212,98 +226,114 @@ blocJams.service('SongPlayer', ['$rootScope', function($rootScope) {
   }
  }]);
 
-  blocJams.directive('slider', ['$document', function($document){
-     // Returns a number between 0 and 1 to determine where the mouse event happened along the slider bar.
-     var calculateSliderPercentFromMouseEvent = function($slider, event) {
-       var offsetX =  event.pageX - $slider.offset().left; // Distance from left
-       var sliderWidth = $slider.width(); // Width of slider
-       var offsetXPercent = (offsetX  / sliderWidth);
-       offsetXPercent = Math.max(0, offsetXPercent);
-       offsetXPercent = Math.min(1, offsetXPercent);
-       return offsetXPercent;
-     }
+// Directives
 
-      var numberFromValue = function(value, defaultValue) {
-        if (typeof value === 'number') {
-         return value;
-        }
+blocJams.directive('slider', ['$document', function($document){
+   // Returns a number between 0 and 1 to determine where the mouse event happened along the slider bar.
+   var calculateSliderPercentFromMouseEvent = function($slider, event) {
+     var offsetX =  event.pageX - $slider.offset().left; // Distance from left
+     var sliderWidth = $slider.width(); // Width of slider
+     var offsetXPercent = (offsetX  / sliderWidth);
+     offsetXPercent = Math.max(0, offsetXPercent);
+     offsetXPercent = Math.min(1, offsetXPercent);
+     return offsetXPercent;
+   }
 
-        if(typeof value === 'undefined') {
-         return defaultValue;
-        }
-
-        if(typeof value === 'string') {
-         return Number(value);
-        }
+    var numberFromValue = function(value, defaultValue) {
+      if (typeof value === 'number') {
+       return value;
       }
-      return {
-        templateUrl: '/templates/directives/slider.html',
-        replace: true,
-        restrict: 'E',
-        scope: {
-          onChange: '&'
-        }, // Creates a scope that exists only in this directive.
-        link: function(scope, element, attributes) {
-           // These values represent the progress into the song/volume bar, and its max value.
-           // For now, we're supplying arbitrary initial and max values.
-           scope.value = 0;
-           scope.max = 100;
-           var $seekBar = $(element);
-     
-            //console.log(attributes);
 
-            attributes.$observe('value', function(newValue) {
-              scope.value = numberFromValue(newValue, 0);
-            });
-       
-            attributes.$observe('max', function(newValue) {
-              scope.max = numberFromValue(newValue, 100) || 100;
-            });
+      if(typeof value === 'undefined') {
+       return defaultValue;
+      }
 
-           var percentString = function () {
-              var value = scope.value || 0;
-              var max = scope.max || 100;
-              percent = value / max * 100;
-            return percent + "%";
-           }
-     
-           scope.fillStyle = function() {
-             return {width: percentString()};
-           }
-     
-           scope.thumbStyle = function() {
-             return {left: percentString()};
-           }
-
-           scope.onClickSlider = function(event) {
-             var percent = calculateSliderPercentFromMouseEvent($seekBar, event);
-             scope.value = percent * scope.max;
-             notifyCallback(scope.value);
-           }
-
-           scope.trackThumb = function() {
-             $document.bind('mousemove.thumb', function(event){
-               var percent = calculateSliderPercentFromMouseEvent($seekBar, event);
-               scope.$apply(function(){
-                 scope.value = percent * scope.max;
-                 notifyCallback(scope.value);
-               });
-             });
-     
-             //cleanup
-             $document.bind('mouseup.thumb', function(){
-               $document.unbind('mousemove.thumb');
-               $document.unbind('mouseup.thumb');
-             });
-           };
-           var notifyCallback = function(newValue) {
-             if(typeof scope.onChange === 'function') {
-               scope.onChange({value: newValue});
-             }
-           };
+      if(typeof value === 'string') {
+       return Number(value);
       }
     }
-  }]);
+    return {
+      templateUrl: '/templates/directives/slider.html',
+      replace: true,
+      restrict: 'E',
+      scope: {
+        onChange: '&'
+      }, // Creates a scope that exists only in this directive.
+      link: function(scope, element, attributes) {
+         // These values represent the progress into the song/volume bar, and its max value.
+         // For now, we're supplying arbitrary initial and max values.
+         scope.value = 0;
+         scope.max = 100;
+         var $seekBar = $(element);
+   
+          //console.log(attributes);
+
+          attributes.$observe('value', function(newValue) {
+            scope.value = numberFromValue(newValue, 0);
+          });
+     
+          attributes.$observe('max', function(newValue) {
+            scope.max = numberFromValue(newValue, 100) || 100;
+          });
+
+         var percentString = function () {
+            var value = scope.value || 0;
+            var max = scope.max || 100;
+            percent = value / max * 100;
+          return percent + "%";
+         }
+   
+         scope.fillStyle = function() {
+           return {width: percentString()};
+         }
+   
+         scope.thumbStyle = function() {
+           return {left: percentString()};
+         }
+
+         scope.onClickSlider = function(event) {
+           var percent = calculateSliderPercentFromMouseEvent($seekBar, event);
+           scope.value = percent * scope.max;
+           notifyCallback(scope.value);
+         }
+
+         scope.trackThumb = function() {
+           $document.bind('mousemove.thumb', function(event){
+             var percent = calculateSliderPercentFromMouseEvent($seekBar, event);
+             scope.$apply(function(){
+               scope.value = percent * scope.max;
+               notifyCallback(scope.value);
+             });
+           });
+   
+           //cleanup
+           $document.bind('mouseup.thumb', function(){
+             $document.unbind('mousemove.thumb');
+             $document.unbind('mouseup.thumb');
+           });
+         };
+         var notifyCallback = function(newValue) {
+           if(typeof scope.onChange === 'function') {
+             scope.onChange({value: newValue});
+           }
+         };
+    }
+  }
+}]);
+
+blocJams.directive('pie', ['$scope', function() {
+  return {
+    templateUrl: '/templates/directives/pie.html',
+    restrict: 'E',
+    link: function(scope, element, attributes) {
+      var ctx = $("#pie-chart").get(0).getContext("2d");
+      new Chart(ctx).Pie(attributes.pieData, options);
+    }
+  };
+}]);
+
+//Filters
+
 blocJams.filter('timecode', function(){
    return function(seconds) {
      seconds = Number.parseFloat(seconds);
@@ -332,7 +362,9 @@ blocJams.filter('timecode', function(){
      return output;
    }
  })
-//Create a Metric Service
+
+// Services
+
 blocJams.service('Metric', ['$rootScope', function($rootScope) {
   
   $rootScope.songPlays = [];
