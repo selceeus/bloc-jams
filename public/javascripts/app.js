@@ -405,7 +405,22 @@ blocJams.controller('PlayerBar.controller', ['$scope', 'SongPlayer', function($s
 blocJams.controller('Analytics.controller', ['$scope', 'Metric', function($scope, Metric) {
 
     $scope.title = "Bloc Jams Analytics";
-    $scope.songPlaysListed = Metric.listSongsPlayed;
+    
+    var piechartArr = [];
+    for (i = 0; i < $scope.songPlays.length; i++) { 
+        piechartArr.push({
+            value: i,
+            color: '#e55ea'+i,
+            name: $scope.songPlays[i].name,
+            day: $scope.songPlays[i].playedAt,
+            length: $scope.songPlays[i].length,
+            url: $scope.songPlays[i].audioUrl
+        });
+    }
+    console.log(piechartArr);
+    
+    $scope.songPlaysListed = piechartArr;
+        
 }]);
 
 // Services
@@ -585,16 +600,16 @@ blocJams.directive('slider', ['$document', function($document){
   }
 }]);
 
-blocJams.directive('pie', ['$scope', function() {
+blocJams.directive('pie', function() {
   return {
     templateUrl: '/templates/directives/pie.html',
     restrict: 'E',
     link: function(scope, element, attributes) {
       var ctx = $("#pie-chart").get(0).getContext("2d");
-      new Chart(ctx).Pie(attributes.pieData, options);
+      new Chart(ctx).Pie(attributes.pieData);
     }
   };
-}]);
+});
 
 //Filters
 
@@ -639,9 +654,6 @@ blocJams.service('Metric', ['$rootScope', function($rootScope) {
       //Add time to event register
       songObj['playedAt'] = new Date();
       $rootScope.songPlays.push(songObj);
-
-      console.log($rootScope.songPlays);
-
     },
     listSongsPlayed: function() {
       var songs = [];
