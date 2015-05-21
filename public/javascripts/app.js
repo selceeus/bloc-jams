@@ -605,8 +605,10 @@ blocJams.directive('pie', function() {
     templateUrl: '/templates/directives/pie.html',
     restrict: 'E',
     link: function(scope, element, attributes) {
-      var ctx = $("#pie-chart").get(0).getContext("2d");
-      new Chart(ctx).Pie(attributes.pieData);
+        window.onload = function(){
+          var ctx = $("#pie-chart").get(0).getContext("2d");
+          new Chart(ctx).Pie(attributes.pieData);
+        };
     }
   };
 });
